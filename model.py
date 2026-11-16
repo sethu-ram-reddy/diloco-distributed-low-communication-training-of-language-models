@@ -196,8 +196,21 @@ def subtract_params(params_a, params_b):
         diff[k] = params_a[k] - params_b[k]
     return diff
 
-# Step 15 - average_params (not yet solved)
-# TODO: implement
+# Step 15 - average_params
+import numpy as np
+
+def average_params(params_list):
+    if not params_list:
+        return {}
+        
+    num_models = len(params_list)
+    avg = {}
+    
+    for k in params_list[0]:
+        total = sum(p[k] for p in params_list)
+        avg[k] = total / num_models
+        
+    return avg
 
 # Step 16 - iid_shard_dataset (not yet solved)
 # TODO: implement
