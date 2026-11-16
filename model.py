@@ -333,10 +333,11 @@ def update_outer_momentum(outer_state, outer_grad, momentum_coef):
 import numpy as np
 
 def nesterov_param_update(params, outer_state, outer_grad, outer_lr, momentum_coef):
+    momentum_dict = outer_state['momentum'] if 'momentum' in outer_state else outer_state
     new_params = {}
     for k in params:
         p = params[k]
-        m = outer_state[k]
+        m = momentum_dict[k]
         g = outer_grad[k]
         new_params[k] = p - outer_lr * (momentum_coef * m + g)
     return new_params
@@ -346,8 +347,32 @@ def compute_outer_gradient(global_params, worker_params_list):
     avg_worker_params = average_params(worker_params_list)
     return subtract_params(global_params, avg_worker_params)
 
-# Step 25 - run_diloco_round (not yet solved)
-# TODO: implement
+# Step 25 - run_diloco_round
+def run_diloco_round(global_params, outer_state, worker_shards, num_inner_steps, batch_size, inner_hparams, outer_lr, momentum_coef, seed):
+    worker_params_list = []
+    worker_losses = []
+    
+    lr = inner_hparams['lr']
+    beta1 = inner_hparams['beta1']
+    beta2 = inner_hparams['beta2']
+    eps = inner_hparams['eps']
+    weight_decay = inner_hparams['weight_decay']
+    
+    for i, (x_shard, y_shard) in enumerate(worker_shards):
+        w_params, w_loss = inner_train_worker(
+            global_params, x_shard, y_shard,
+            num_inner_steps, batch_size,
+            lr, beta1, beta2, eps, weight_decay,
+            seed + i
+        )
+        worker_params_list.append(w_params)
+        worker_losses.append(w_loss)
+        
+    outer_grad = compute_outer_gradient(global_params, worker_params_list)
+    outer_state = update_outer_momentum(outer_state, outer_grad, momentum_coef)
+    new_global_params = nesterov_param_update(global_params, outer_state, outer_grad, outer_lr, momentum_coef)
+    
+    return new_global_params, outer_state, worker_losses
 
 # Step 26 - train_diloco (not yet solved)
 # TODO: implement
