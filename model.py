@@ -169,8 +169,14 @@ def decoupled_weight_decay(params, lr, weight_decay):
         new_params[k] = v * decay_factor
     return new_params
 
-# Step 12 - clone_params (not yet solved)
-# TODO: implement
+# Step 12 - clone_params
+import numpy as np
+
+def clone_params(params):
+    cloned = {}
+    for k, v in params.items():
+        cloned[k] = v.copy()
+    return cloned
 
 # Step 13 - scale_params (not yet solved)
 # TODO: implement
