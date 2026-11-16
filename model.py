@@ -459,8 +459,24 @@ def evaluate_loss(params, x, y):
     loss = cross_entropy_loss(logits, y)
     return float(loss)
 
-# Step 29 - classification_accuracy (not yet solved)
-# TODO: implement
+# Step 29 - classification_accuracy
+import numpy as np
+
+def classification_accuracy(params, x, y):
+    logits, _ = model_forward(params, x)
+    # Assuming logits has shape (N, num_classes) and y has shape (N,) or one-hot
+    if y.ndim > 1 and y.shape[1] > 1:
+        y_true = np.argmax(y, axis=1)
+    else:
+        y_true = y
+        
+    preds = np.argmax(logits, axis=1)
+    correct = np.sum(preds == y_true)
+    total = x.shape[0]
+    
+    if total == 0:
+        return 0.0
+    return float(correct / total)
 
 # Step 30 - communication_savings (not yet solved)
 # TODO: implement
