@@ -374,8 +374,37 @@ def run_diloco_round(global_params, outer_state, worker_shards, num_inner_steps,
     
     return new_global_params, outer_state, worker_losses
 
-# Step 26 - train_diloco (not yet solved)
-# TODO: implement
+# Step 26 - train_diloco
+def train_diloco(initial_params, worker_shards, num_outer_rounds, num_inner_steps, batch_size, inner_hparams, outer_lr, momentum_coef, seed):
+    params = clone_params(initial_params)
+    outer_state = init_outer_optimizer(params)
+    round_losses = []
+    
+    num_shards = len(worker_shards)
+    
+    for round_idx in range(num_outer_rounds):
+        round_seed = seed + round_idx * max(1, num_shards)
+        
+        # If num_inner_steps is 0, inner_train_worker will cause a division by zero.
+        # We can bypass inner training for 0 steps and manually return default worker states/losses.
+        if num_inner_steps == 0:
+            worker_losses = [0.0 for _ in worker_shards]
+            # When inner steps are 0, parameters and outer state remain unchanged
+        else:
+            params, outer_state, worker_losses = run_diloco_round(
+                params, outer_state, worker_shards,
+                num_inner_steps, batch_size,
+                inner_hparams, outer_lr, momentum_coef,
+                round_seed
+            )
+        
+        if worker_losses:
+            mean_round_loss = float(sum(worker_losses) / len(worker_losses))
+            round_losses.append(mean_round_loss)
+        else:
+            round_losses.append(0.0)
+            
+    return params, {'round_losses': round_losses}
 
 # Step 27 - train_synchronous_baseline (not yet solved)
 # TODO: implement
