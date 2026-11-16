@@ -130,8 +130,22 @@ def update_adam_moments(state, grads, beta1, beta2):
         
     return state
 
-# Step 9 - bias_correct_moments (not yet solved)
-# TODO: implement
+# Step 9 - bias_correct_moments
+import numpy as np
+
+def bias_correct_moments(state, beta1, beta2):
+    t = state['t']
+    bias_correction1 = 1.0 - (beta1 ** t)
+    bias_correction2 = 1.0 - (beta2 ** t)
+    
+    m_hat = {}
+    v_hat = {}
+    
+    for k in state['m']:
+        m_hat[k] = state['m'][k] / bias_correction1
+        v_hat[k] = state['v'][k] / bias_correction2
+        
+    return m_hat, v_hat
 
 # Step 10 - adam_param_step (not yet solved)
 # TODO: implement
