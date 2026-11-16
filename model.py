@@ -453,8 +453,11 @@ def train_synchronous_baseline(init_params, worker_shards, num_steps, batch_size
         
     return params, {'step_losses': step_losses}
 
-# Step 28 - evaluate_loss (not yet solved)
-# TODO: implement
+# Step 28 - evaluate_loss
+def evaluate_loss(params, x, y):
+    logits, _ = model_forward(params, x)
+    loss = cross_entropy_loss(logits, y)
+    return float(loss)
 
 # Step 29 - classification_accuracy (not yet solved)
 # TODO: implement
