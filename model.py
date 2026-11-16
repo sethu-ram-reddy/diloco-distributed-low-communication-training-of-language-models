@@ -406,8 +406,52 @@ def train_diloco(initial_params, worker_shards, num_outer_rounds, num_inner_step
             
     return params, {'round_losses': round_losses}
 
-# Step 27 - train_synchronous_baseline (not yet solved)
-# TODO: implement
+# Step 27 - train_synchronous_baseline
+import numpy as np
+
+def train_synchronous_baseline(init_params, worker_shards, num_steps, batch_size, inner_hparams, seed=0):
+    params = clone_params(init_params)
+    adam_state = init_adamw_state(params)
+    rng = np.random.default_rng(seed)
+    
+    lr = inner_hparams['lr']
+    beta1 = inner_hparams['beta1']
+    beta2 = inner_hparams['beta2']
+    eps = inner_hparams['eps']
+    weight_decay = inner_hparams['weight_decay']
+    
+    step_losses = []
+    num_workers = len(worker_shards)
+    
+    for _ in range(num_steps):
+        worker_grads = []
+        worker_losses = []
+        
+        for x_shard, y_shard in worker_shards:
+            x_batch, y_batch = sample_worker_batch(x_shard, y_shard, batch_size, rng)
+            logits, cache = model_forward(params, x_batch)
+            loss = cross_entropy_loss(logits, y_batch)
+            grads = model_backward(params, cache, y_batch)
+            
+            worker_grads.append(grads)
+            worker_losses.append(loss)
+            
+        if worker_grads:
+            avg_grads = average_params(worker_grads)
+            mean_loss = float(sum(worker_losses) / num_workers)
+        else:
+            avg_grads = {k: np.zeros_like(v) for k, v in params.items()}
+            mean_loss = 0.0
+            
+        step_losses.append(mean_loss)
+        
+        # AdamW step using the averaged gradients
+        update_adam_moments(adam_state, avg_grads, beta1, beta2)
+        m_hat, v_hat = bias_correct_moments(adam_state, beta1, beta2)
+        params = adam_param_step(params, m_hat, v_hat, lr, eps)
+        params = decoupled_weight_decay(params, lr, weight_decay)
+        
+    return params, {'step_losses': step_losses}
 
 # Step 28 - evaluate_loss (not yet solved)
 # TODO: implement
