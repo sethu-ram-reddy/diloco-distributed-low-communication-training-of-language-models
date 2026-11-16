@@ -178,8 +178,14 @@ def clone_params(params):
         cloned[k] = v.copy()
     return cloned
 
-# Step 13 - scale_params (not yet solved)
-# TODO: implement
+# Step 13 - scale_params
+import numpy as np
+
+def scale_params(params, scalar):
+    scaled = {}
+    for k, v in params.items():
+        scaled[k] = (v * scalar).copy()
+    return scaled
 
 # Step 14 - subtract_params (not yet solved)
 # TODO: implement
