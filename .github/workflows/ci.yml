@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install package
+        run: |
+          python -m pip install numpy==2.3.5
+          python -m pip install .
+      - name: Verify model math and worker protocol
+        run: python -m unittest discover -s tests -v
+      - name: Exercise the installed CLI with two worker processes
+        run: >-
+          diloco-benchmark --corpus tests/fixtures/letters.txt --output runs/ci
+          --workers 2 --seeds 0 --intervals 2 4 --steps 4 --eval-every 4
+          --context 2 --batch-size 4 --train-windows 120 --holdout-windows 12
+      - name: Run the original-style demonstration
+        run: python scaffold.py

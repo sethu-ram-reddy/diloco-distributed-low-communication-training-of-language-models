@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "diloco-benchmark"
+version = "0.1.0"
+description = "Reproducible DiLoCo communication and convergence experiments on CPU"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26,<3"]
+
+[project.optional-dependencies]
+charts = ["matplotlib>=3.7,<4"]
+
+[project.scripts]
+diloco-benchmark = "diloco.cli:main"
+
+[tool.setuptools]
+packages = ["diloco"]
+py-modules = ["model"]

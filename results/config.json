@@ -1,0 +1,51 @@
+{
+  "model": {
+    "context_characters": 8,
+    "vocabulary_size_including_unknown": 66,
+    "hidden_size": 64,
+    "parameters": 38146,
+    "payload_dtype": "float64 little-endian"
+  },
+  "corpus": {
+    "sha256": "86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed",
+    "training_characters": 1003854,
+    "held_out_characters": 111540,
+    "training_windows": 65536,
+    "held_out_windows": 4096
+  },
+  "training": {
+    "steps": 320,
+    "batch_size": 32,
+    "eval_every": 80,
+    "inner_lr": 0.003,
+    "beta1": 0.9,
+    "beta2": 0.999,
+    "eps": 1e-08,
+    "weight_decay": 0.0001,
+    "outer_lr": 0.7,
+    "momentum": 0.9
+  },
+  "workers": 4,
+  "intervals": [
+    5,
+    20,
+    80
+  ],
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "sharding": [
+    "iid",
+    "label-skew"
+  ],
+  "execution": {
+    "platform": "Linux",
+    "machine": "x86_64",
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "worker_start_method": "spawn",
+    "transport": "multiprocessing.Connection.send_bytes"
+  }
+}

@@ -53,7 +53,7 @@ def main():
     diloco_params, diloco_log = train_diloco(
         clone_params(init_params),
         worker_shards,
-        num_rounds=num_rounds,
+        num_outer_rounds=num_rounds,
         num_inner_steps=num_inner_steps,
         batch_size=batch_size,
         inner_hparams=inner_hparams,
