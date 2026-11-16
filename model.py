@@ -259,8 +259,35 @@ def sample_worker_batch(x_shard, y_shard, batch_size, rng):
     indices = rng.choice(n, size=batch_size, replace=replace)
     return x_shard[indices], y_shard[indices]
 
-# Step 19 - local_train_step (not yet solved)
-# TODO: implement
+# Step 19 - local_train_step
+def local_train_step(params, adam_state, x_batch, y_batch, lr, beta1, beta2, eps, weight_decay):
+    # 1. Forward pass & cache
+    logits, cache = model_forward(params, x_batch)
+    
+    # 2. Compute loss
+    loss = cross_entropy_loss(logits, y_batch)
+    
+    # 3. Backward pass to get gradients
+    grads = model_backward(params, cache, y_batch)
+    
+    # 4. Update Adam moments (mutates or updates state)
+    new_adam_state = {
+        't': adam_state['t'],
+        'm': {k: v.copy() for k, v in adam_state['m'].items()},
+        'v': {k: v.copy() for k, v in adam_state['v'].items()},
+    }
+    update_adam_moments(new_adam_state, grads, beta1, beta2)
+    
+    # 5. Bias correction
+    m_hat, v_hat = bias_correct_moments(new_adam_state, beta1, beta2)
+    
+    # 6. Adam parameter step
+    updated_params = adam_param_step(params, m_hat, v_hat, lr, eps)
+    
+    # 7. Decoupled weight decay
+    new_params = decoupled_weight_decay(updated_params, lr, weight_decay)
+    
+    return new_params, new_adam_state, loss
 
 # Step 20 - inner_train_worker (not yet solved)
 # TODO: implement
