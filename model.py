@@ -231,8 +231,24 @@ def iid_shard_dataset(x, y, num_workers, seed=0):
         
     return shards
 
-# Step 17 - noniid_shard_dataset (not yet solved)
-# TODO: implement
+# Step 17 - noniid_shard_dataset
+import numpy as np
+
+def noniid_shard_dataset(x, y, num_workers, num_classes, seed=0):
+    rng = np.random.default_rng(seed)
+    shards = []
+    
+    for w in range(num_workers):
+        # Collect indices where label c satisfies c % num_workers == w
+        idx = np.where((y % num_workers) == w)[0]
+        
+        if len(idx) > 0:
+            perm = rng.permutation(len(idx))
+            idx = idx[perm]
+            
+        shards.append((x[idx], y[idx]))
+        
+    return shards
 
 # Step 18 - sample_worker_batch (not yet solved)
 # TODO: implement
