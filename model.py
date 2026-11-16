@@ -212,8 +212,24 @@ def average_params(params_list):
         
     return avg
 
-# Step 16 - iid_shard_dataset (not yet solved)
-# TODO: implement
+# Step 16 - iid_shard_dataset
+import numpy as np
+
+def iid_shard_dataset(x, y, num_workers, seed=0):
+    rng = np.random.default_rng(seed)
+    n_samples = x.shape[0]
+    
+    # Randomly permute indices reproducibly
+    perm = rng.permutation(n_samples)
+    
+    # np.array_split automatically distributes remainder across the earliest shards
+    index_shards = np.array_split(perm, num_workers)
+    
+    shards = []
+    for idx in index_shards:
+        shards.append((x[idx], y[idx]))
+        
+    return shards
 
 # Step 17 - noniid_shard_dataset (not yet solved)
 # TODO: implement
