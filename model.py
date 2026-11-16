@@ -159,8 +159,15 @@ def adam_param_step(params, m_hat, v_hat, lr, eps):
         new_params[k] = p - lr * m / (np.sqrt(v) + eps)
     return new_params
 
-# Step 11 - decoupled_weight_decay (not yet solved)
-# TODO: implement
+# Step 11 - decoupled_weight_decay
+import numpy as np
+
+def decoupled_weight_decay(params, lr, weight_decay):
+    decay_factor = 1.0 - lr * weight_decay
+    new_params = {}
+    for k, v in params.items():
+        new_params[k] = v * decay_factor
+    return new_params
 
 # Step 12 - clone_params (not yet solved)
 # TODO: implement
