@@ -187,8 +187,14 @@ def scale_params(params, scalar):
         scaled[k] = (v * scalar).copy()
     return scaled
 
-# Step 14 - subtract_params (not yet solved)
-# TODO: implement
+# Step 14 - subtract_params
+import numpy as np
+
+def subtract_params(params_a, params_b):
+    diff = {}
+    for k in params_a:
+        diff[k] = params_a[k] - params_b[k]
+    return diff
 
 # Step 15 - average_params (not yet solved)
 # TODO: implement
