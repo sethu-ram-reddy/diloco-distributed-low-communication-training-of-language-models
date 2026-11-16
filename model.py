@@ -478,6 +478,27 @@ def classification_accuracy(params, x, y):
         return 0.0
     return float(correct / total)
 
-# Step 30 - communication_savings (not yet solved)
-# TODO: implement
+# Step 30 - communication_savings
+def communication_savings(num_rounds, num_inner_steps, num_workers, param_count):
+    # DiLoCo communicates once per round:
+    # Each worker sends params (param_count) and receives updated global params (param_count) = 2 * param_count per worker.
+    # Total per round across all workers: 2 * num_workers * param_count.
+    # Over all num_rounds:
+    diloco_scalars = num_rounds * (2 * num_workers * param_count)
+    
+    # Synchronous baseline communicates every local step:
+    # Total synchronous steps = num_rounds * num_inner_steps.
+    # Each step communicates 2 * num_workers * param_count scalars.
+    total_sync_steps = num_rounds * num_inner_steps
+    sync_scalars = total_sync_steps * (2 * num_workers * param_count)
+    
+    ratio = diloco_scalars / sync_scalars if sync_scalars > 0 else 0.0
+    savings_factor = sync_scalars / diloco_scalars if diloco_scalars > 0 else 0.0
+    
+    return {
+        'diloco_scalars': diloco_scalars,
+        'sync_scalars': sync_scalars,
+        'ratio': ratio,
+        'savings_factor': savings_factor
+    }
 
