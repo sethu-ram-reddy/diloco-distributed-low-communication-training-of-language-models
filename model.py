@@ -329,8 +329,17 @@ def update_outer_momentum(outer_state, outer_grad, momentum_coef):
         m[k] = momentum_coef * m[k] + outer_grad[k]
     return outer_state
 
-# Step 23 - nesterov_param_update (not yet solved)
-# TODO: implement
+# Step 23 - nesterov_param_update
+import numpy as np
+
+def nesterov_param_update(params, outer_state, outer_grad, outer_lr, momentum_coef):
+    new_params = {}
+    for k in params:
+        p = params[k]
+        m = outer_state[k]
+        g = outer_grad[k]
+        new_params[k] = p - outer_lr * (momentum_coef * m + g)
+    return new_params
 
 # Step 24 - compute_outer_gradient (not yet solved)
 # TODO: implement
