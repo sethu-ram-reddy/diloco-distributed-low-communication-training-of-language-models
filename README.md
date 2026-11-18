@@ -1,8 +1,8 @@
 # DiLoCo Communication Benchmark
 
-How much communication can local training save, and what does it cost in model quality? This benchmark compares DiLoCo with synchronous data-parallel AdamW on next-character prediction. It runs four CPU worker processes and counts the model payload each worker actually exchanges with the coordinator.
-
 **80× fewer model bytes on IID data** at 80 local steps per synchronization. Total payload fell from **745.04 MiB to 9.31 MiB**. Held-out top-1 accuracy fell from **34.44% to 32.74%**, and perplexity rose from **10.28 to 12.04**. When each worker saw a different set of target labels, the same schedule raised perplexity from **10.61 to 20.75**.
+
+How much communication can local training save, and what does it cost in model quality? This benchmark compares DiLoCo with synchronous data-parallel AdamW on next-character prediction. It runs four CPU worker processes and counts the model payload each worker actually exchanges with the coordinator.
 
 ![Held-out perplexity versus transmitted model payload for IID and label-partitioned workers](results/tradeoff.png)
 
